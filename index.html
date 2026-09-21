@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desafío Primavera — VERA INDUSTRIAS</title>
+<meta name="description" content="Simulación de consultoría: análisis de evidencia, decisión y gestión de recursos en 12 minutos.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<!-- =====================================================  BIENVENIDA -->
+<section id="pantalla-bienvenida" class="pantalla pantalla--activa">
+  <div class="bienvenida">
+    <header class="bienvenida__cabecera">
+      <div class="marca">
+        <svg class="marca__flor" viewBox="0 0 40 40" aria-hidden="true">
+          <g fill="currentColor" opacity="0.9">
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(72 20 20)"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(144 20 20)"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(216 20 20)"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(288 20 20)"/>
+          </g>
+          <circle cx="20" cy="20" r="4.6" fill="var(--ambar)"/>
+        </svg>
+        <div>
+          <p class="marca__titulo">DESAFÍO PRIMAVERA</p>
+          <p class="marca__sub">¿Hubo realmente una transformación?</p>
+        </div>
+      </div>
+      <p class="bienvenida__meta">Simulación profesional · 12 minutos · Equipos de 5 integrantes</p>
+    </header>
+
+    <div class="bienvenida__cuerpo">
+      <div class="bienvenida__columna">
+        <article class="panel panel--caso">
+          <p class="etiqueta">EL CASO</p>
+          <h1 class="panel__titulo" id="contexto-titulo"></h1>
+          <div id="contexto-texto"></div>
+          <blockquote class="cita">
+            <p id="contexto-cita"></p>
+            <footer id="contexto-autor"></footer>
+          </blockquote>
+          <p class="panel__cierre" id="contexto-cierre"></p>
+        </article>
+
+        <article class="panel panel--instrucciones">
+          <h2 class="panel__titulo" id="instr-titulo"></h2>
+          <p class="instr__intro" id="instr-intro"></p>
+          <ol class="pasos" id="instr-pasos"></ol>
+
+          <h3 class="instr__subtitulo" id="instr-reglas-titulo"></h3>
+          <ul class="reglas" id="instr-reglas"></ul>
+
+          <h3 class="instr__subtitulo" id="instr-etapas-titulo"></h3>
+          <ol class="etapas-previa" id="instr-etapas"></ol>
+
+          <p class="instr__cierre" id="instr-cierre"></p>
+        </article>
+      </div>
+
+      <aside class="panel panel--equipo">
+        <h2 class="panel__titulo">EQUIPO CONSULTOR</h2>
+        <p class="ayuda-texto">Seleccionen la consultora que representa al equipo.</p>
+        <div class="equipos" id="equipos"></div>
+
+        <button type="button" class="boton boton--principal boton--grande" id="btn-iniciar" disabled>
+          INICIAR DESAFÍO
+        </button>
+        <p class="ayuda-texto ayuda-texto--centro">El cronómetro comienza al presionar este botón.</p>
+      </aside>
+    </div>
+
+    <footer class="bienvenida__pie">
+      <p>Los datos, la empresa y las consultoras de este ejercicio son ficticios y fueron construidos para la dinámica.</p>
+    </footer>
+  </div>
+</section>
+
+<!-- ==========================================================  JUEGO -->
+<section id="pantalla-juego" class="pantalla">
+  <header class="cabecera">
+    <div class="cabecera__marca">
+      <svg class="marca__flor marca__flor--chica" viewBox="0 0 40 40" aria-hidden="true">
+        <g fill="currentColor" opacity="0.9">
+          <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5"/>
+          <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(72 20 20)"/>
+          <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(144 20 20)"/>
+          <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(216 20 20)"/>
+          <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(288 20 20)"/>
+        </g>
+        <circle cx="20" cy="20" r="4.6" fill="var(--ambar)"/>
+      </svg>
+      <div>
+        <p class="cabecera__titulo">DESAFÍO PRIMAVERA</p>
+        <p class="cabecera__cliente">VERA INDUSTRIAS</p>
+      </div>
+    </div>
+
+    <div class="cabecera__equipo">
+      <p class="etiqueta">EQUIPO</p>
+      <p class="cabecera__equipo-nombre" id="hdr-equipo"></p>
+      <button type="button" class="enlace" id="btn-como-se-juega">Cómo se juega</button>
+    </div>
+
+    <div class="relojes">
+      <div class="reloj">
+        <p class="etiqueta">TIEMPO TRANSCURRIDO</p>
+        <p class="reloj__valor" id="reloj-real">00:00</p>
+      </div>
+      <div class="reloj reloj--total">
+        <p class="etiqueta">TIEMPO TOTAL</p>
+        <p class="reloj__valor" id="reloj-total">00:00</p>
+        <p class="reloj__nota" id="reloj-extra">sin tiempo adicional</p>
+      </div>
+      <div class="reloj reloj--limite">
+        <p class="etiqueta">RESTANTE DE 12:00</p>
+        <p class="reloj__valor" id="reloj-restante">12:00</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="tablero">
+    <!-- Franja de avance: margarita + las cinco etapas -->
+    <section class="progreso">
+      <svg class="margarita" id="margarita" viewBox="0 0 400 424" role="img" aria-label="Margarita de cinco pétalos con el avance del equipo"></svg>
+      <ol class="etapas" id="etapas"></ol>
+    </section>
+
+    <!-- Columna principal: el pétalo actual -->
+    <section class="columna columna--principal">
+      <article class="tarea" id="tarea">
+        <header class="tarea__cabecera">
+          <p class="etiqueta" id="tarea-etiqueta">PÉTALO 1</p>
+          <h2 class="tarea__titulo" id="tarea-titulo"></h2>
+        </header>
+        <div class="tarea__cuerpo" id="tarea-cuerpo"></div>
+        <div class="devolucion" id="devolucion" hidden></div>
+        <footer class="tarea__pie" id="tarea-pie"></footer>
+      </article>
+    </section>
+
+    <!-- Columna lateral: recursos, evidencia acumulada y registro -->
+    <aside class="columna columna--lateral">
+      <section class="lateral__bloque">
+        <h2 class="columna__titulo">RECURSOS</h2>
+        <p class="ayuda-texto">Un uso cada uno. Suman segundos al tiempo total.</p>
+        <div class="recursos" id="recursos-lista"></div>
+      </section>
+
+      <section class="lateral__bloque">
+        <button type="button" class="lateral__toggle" id="btn-evidencia" aria-expanded="false">
+          <span class="columna__titulo">EVIDENCIA DEL CASO</span>
+          <span class="lateral__toggle-estado" id="evidencia-estado"></span>
+        </button>
+        <div class="datos" id="datos-lista" hidden></div>
+      </section>
+
+      <section class="lateral__bloque">
+        <button type="button" class="lateral__toggle" id="btn-registro" aria-expanded="false">
+          <span class="columna__titulo">REGISTRO</span>
+          <span class="lateral__toggle-estado" id="registro-estado"></span>
+        </button>
+        <ul class="registro" id="registro" hidden></ul>
+      </section>
+    </aside>
+  </main>
+</section>
+
+<!-- ==========================================================  FINAL -->
+<section id="pantalla-final" class="pantalla">
+  <div class="final">
+    <header class="final__cabecera">
+      <div class="marca">
+        <svg class="marca__flor" viewBox="0 0 40 40" aria-hidden="true">
+          <g fill="currentColor" opacity="0.9">
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(72 20 20)"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(144 20 20)"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(216 20 20)"/>
+            <ellipse cx="20" cy="9.5" rx="3.6" ry="7.5" transform="rotate(288 20 20)"/>
+          </g>
+          <circle cx="20" cy="20" r="4.6" fill="var(--ambar)"/>
+        </svg>
+        <div>
+          <p class="marca__titulo" id="final-titulo">DESEMPEÑO DEL EQUIPO</p>
+          <p class="marca__sub" id="final-sub"></p>
+        </div>
+      </div>
+      <nav class="final__nav" id="final-nav"></nav>
+    </header>
+
+    <div class="final__cuerpo">
+      <section class="final__seccion final__seccion--activa" id="seccion-resultado"></section>
+      <section class="final__seccion" id="seccion-cierre"></section>
+      <section class="final__seccion" id="seccion-comparativo"></section>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================  MODAL -->
+<div class="modal" id="modal" hidden>
+  <div class="modal__fondo" data-cerrar-modal></div>
+  <div class="modal__caja" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <p class="etiqueta" id="modal-etiqueta"></p>
+    <h2 class="modal__titulo" id="modal-titulo"></h2>
+    <div class="modal__cuerpo" id="modal-cuerpo"></div>
+    <div class="modal__acciones" id="modal-acciones"></div>
+  </div>
+</div>
+
+<script src="caso.js"></script>
+<script src="logica.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
