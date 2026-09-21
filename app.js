@@ -22,6 +22,7 @@
   var bloqueado = false;    // true cuando se agotó el tiempo
   var seccionFinal = 'resultado';
   var resultadoExterno = null;
+  var modoConduccion = false;   // comparativo sin jugar, para quien conduce
 
   /* ================================================================ util */
 
@@ -157,6 +158,7 @@
 
     armarInstrucciones();
     $('btn-iniciar').addEventListener('click', iniciarDesafio);
+    $('btn-comparativo').addEventListener('click', abrirComparativo);
   }
 
   /* Enunciado de la dinámica: se lee antes de iniciar y queda accesible
@@ -1234,11 +1236,20 @@
   }
 
   function irAlFinal() {
+    modoConduccion = false;
     detenerReloj();
     if (!estado.finalizado) L.finalizar(estado, 'manual');
     guardarResultado();
     mostrarPantalla('pantalla-final');
-    $('final-sub').textContent = L.nombreEquipo(estado.equipo) + ' · VERA INDUSTRIAS';
+    armarNavFinal();
+    dibujarFinal();
+  }
+
+  /* Comparativo sin partida: quien conduce pega los dos resultados. */
+  function abrirComparativo() {
+    modoConduccion = true;
+    seccionFinal = 'comparativo';
+    mostrarPantalla('pantalla-final');
     armarNavFinal();
     dibujarFinal();
   }
@@ -1246,6 +1257,15 @@
   function armarNavFinal() {
     var nav = $('final-nav');
     limpiar(nav);
+
+    if (modoConduccion) {
+      var volver = crear('button', 'boton boton--fino', 'VOLVER A LA PANTALLA INICIAL');
+      volver.type = 'button';
+      volver.addEventListener('click', volverAlInicio);
+      nav.appendChild(volver);
+      return;
+    }
+
     [
       { id: 'resultado', texto: 'RESULTADO' },
       { id: 'cierre', texto: 'CIERRE REFLEXIVO' },
@@ -1265,6 +1285,11 @@
   }
 
   function dibujarFinal() {
+    $('final-titulo').textContent = modoConduccion ? 'RESULTADO COMPARATIVO' : 'DESEMPEÑO DEL EQUIPO';
+    $('final-sub').textContent = modoConduccion
+      ? 'Panel de conducción · VERA INDUSTRIAS'
+      : L.nombreEquipo(estado.equipo) + ' · VERA INDUSTRIAS';
+
     ['resultado', 'cierre', 'comparativo'].forEach(function (s) {
       $('seccion-' + s).classList.toggle('final__seccion--activa', s === seccionFinal);
     });
@@ -1491,10 +1516,8 @@
     limpiar(cont);
 
     var guardados = leerGuardados();
-    guardados[estado.equipo] = L.resultado(estado);
-    if (resultadoExterno && resultadoExterno.equipo !== estado.equipo) {
-      guardados[resultadoExterno.equipo] = resultadoExterno;
-    }
+    if (estado && !modoConduccion) guardados[estado.equipo] = L.resultado(estado);
+    if (resultadoExterno) guardados[resultadoExterno.equipo] = resultadoExterno;
     var a = guardados[CASO.equipos[0].id] || null;
     var b = guardados[CASO.equipos[1].id] || null;
 
@@ -1540,9 +1563,10 @@
     }
     cont.appendChild(tabla);
 
-    var carga = bloque('CARGAR EL RESULTADO DEL OTRO EQUIPO');
-    carga.appendChild(crear('p', 'ayuda-texto',
-      'Peguen acá el texto que el otro equipo copió con “COPIAR RESULTADO PARA COMPARAR”.'));
+    var carga = bloque(modoConduccion ? 'CARGAR LOS RESULTADOS DE LOS EQUIPOS' : 'CARGAR EL RESULTADO DEL OTRO EQUIPO');
+    carga.appendChild(crear('p', 'ayuda-texto', modoConduccion
+      ? 'Peguen un resultado, cárguenlo, y repitan con el del otro equipo. Cada equipo lo copia al terminar con “COPIAR RESULTADO PARA COMPARAR”.'
+      : 'Peguen acá el texto que el otro equipo copió con “COPIAR RESULTADO PARA COMPARAR”.'));
     var caja = crear('div', 'pegar-resultado');
     var ta = crear('textarea');
     ta.setAttribute('aria-label', 'Resultado del otro equipo');
@@ -1559,7 +1583,7 @@
         carga.appendChild(msj);
         return;
       }
-      if (r.equipo === estado.equipo) {
+      if (!modoConduccion && estado && r.equipo === estado.equipo) {
         msj.className = 'mensaje-sistema mensaje-sistema--error';
         msj.textContent = 'El resultado pegado corresponde a este mismo equipo.';
         carga.appendChild(msj);
@@ -1611,23 +1635,30 @@
 
     var bv = crear('button', 'boton boton--fino', 'VOLVER A LA PANTALLA INICIAL');
     bv.type = 'button';
-    bv.addEventListener('click', function () {
-      window.removeEventListener('beforeunload', avisarRecarga);
-      estado = null;
-      equipoElegido = null;
-      borrador = {};
-      eventos = [];
-      datosAbiertos = {};
-      bloqueado = false;
-      seccionFinal = 'resultado';
-      totalPrevio = 0;
-      Array.prototype.forEach.call($('equipos').children, function (h) { h.setAttribute('aria-pressed', 'false'); });
-      $('btn-iniciar').disabled = true;
-      mostrarPantalla('pantalla-bienvenida');
-    });
+    bv.addEventListener('click', volverAlInicio);
     acciones.appendChild(bv);
     reinicio.appendChild(acciones);
     cont.appendChild(reinicio);
+  }
+
+  function volverAlInicio() {
+    window.removeEventListener('beforeunload', avisarRecarga);
+    detenerReloj();
+    estado = null;
+    equipoElegido = null;
+    borrador = {};
+    eventos = [];
+    datosAbiertos = {};
+    bloqueado = false;
+    modoConduccion = false;
+    seccionFinal = 'resultado';
+    resultadoExterno = null;
+    totalPrevio = 0;
+    Array.prototype.forEach.call($('equipos').children, function (h) {
+      h.setAttribute('aria-pressed', 'false');
+    });
+    $('btn-iniciar').disabled = true;
+    mostrarPantalla('pantalla-bienvenida');
   }
 
   /* ================================================================ init */

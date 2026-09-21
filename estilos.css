@@ -239,6 +239,16 @@ button { font: inherit; color: inherit; }
 
 .acciones { margin-top: .5rem; display: flex; gap: .5rem; flex-wrap: wrap; }
 
+/* acceso de conduccion en la pantalla inicial */
+.conduccion {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--borde);
+  display: grid;
+  gap: .35rem;
+  justify-items: start;
+}
+
 /* ----------------------------------------------------------- enunciado */
 
 .instr__intro {
